@@ -1,9 +1,6 @@
 import Money.Coin.Coin;
 import Money.Coin.CoinType;
-import Products.Crisp;
-import Products.Drink;
-import Products.Product;
-import Products.Sweet;
+import Products.*;
 import VendingShelves.Slot;
 import VendingShelves.SlotCode;
 import org.junit.Before;
@@ -27,16 +24,15 @@ public class VendingMachineTest {
     private Slot A1Drink;
     private Slot B1Crisps;
     private Slot C1Sweet;
+    private Slot empty;
     private ArrayList<Coin> coinsThatCanBeAccepted;
     private Crisp crisps;
     private Sweet sweet;
     private Drink drink;
+    private EmptyProductObj emptyProductObj;
 
     @Before
     public void setUp(){
-        crisps = new Crisp("Salt & Vinegar", "Walkers");
-        sweet = new Sweet("Toffee Crisp", "Nestle");
-        drink = new Drink("Coca Cola", "Nestle");
 
         coinsThatCanBeAccepted = new ArrayList<Coin>();
         vendingMachine = new VendingMachine(coinsThatCanBeAccepted);
@@ -50,9 +46,17 @@ public class VendingMachineTest {
         FIFTY = new Coin(CoinType.FIFTY);
         ONEPOUND = new Coin(CoinType.ONEPOUND);
 
+        crisps = new Crisp("Salt & Vinegar", "Walkers");
+        sweet = new Sweet("Toffee Crisp", "Nestle");
+        drink = new Drink("Coca Cola", "Nestle");
+        emptyProductObj = new EmptyProductObj("", "");
         A1Drink = new Slot(SlotCode.A1, 1.00, drink);
         B1Crisps = new Slot(SlotCode.B1, 0.50, crisps);
         C1Sweet = new Slot(SlotCode.C1, 0.65, sweet);
+        empty = new Slot(SlotCode.A2, 0.00, emptyProductObj);
+
+
+
     }
 
     @Test
@@ -65,11 +69,11 @@ public class VendingMachineTest {
     @Test
     public void canRefuseCoins(){
         vendingMachine.addCoinToAcceptedList(FIVE, TEN, TWENTY, FIFTY, ONEPOUND);
+        vendingMachine.addMoney(ONE);
         vendingMachine.addMoney(TWENTY);
         vendingMachine.addMoney(TEN);
-        vendingMachine.addMoney(ONE);
         assertEquals(2, vendingMachine.checkCoinsReceivedArraySize());
-        assertEquals(false, vendingMachine.addMoney(ONE));
+        assertEquals(1, vendingMachine.returnRejectedCoinArraySize());
     }
 
     @Test
@@ -78,21 +82,80 @@ public class VendingMachineTest {
         assertEquals(15, vendingMachine.checkMachineHasSlots());
     }
 
+    //in slot class
     @Test
-    public void canAssignProductToSlot(){
-        vendingMachine.assignSlotsToVendingMachine();
-        vendingMachine.assignProductToSlot(A1Drink);
-        assertEquals(slots, vendingMachine.returnSlotArray());
+    public void canReturnSlotCode(){
+        assertEquals(SlotCode.A1, A1Drink.selectItemCode(A1Drink));
     }
 
-    //        @Test
-//    public void canAddMoneyToMachine() {
+    @Test
+    public void canReturnEmptySlot() {
+        vendingMachine.assignSlotsToVendingMachine();
+        assertEquals(0, vendingMachine.returnEmptySlotIndex());
+    }
+
+    @Test
+    public void canInsertProductAtEmptySlot(){
+        vendingMachine.assignSlotsToVendingMachine();
+        vendingMachine.returnEmptySlotIndex();
+        vendingMachine.assignProductToEmptySlot(drink, 1.00);
+        assertEquals(1, vendingMachine.returnEmptySlotIndex());
+    }
+
+    @Test
+    public void returnSlotsWithCrisps(){
+        vendingMachine.assignSlotsToVendingMachine();
+        vendingMachine.returnEmptySlotIndex();
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(drink, 1.00);
+        assertEquals(2, vendingMachine.returnNumberOfCodesWithCrisps());
+    }
+
+    @Test
+    public void canReturnListOfCodesAndTheirContents() {
+//        ArrayList<Slot> contents = new ArrayList<Slot>();
+        vendingMachine.assignSlotsToVendingMachine();
+        vendingMachine.returnEmptySlotIndex();
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(drink, 1.00);
+        assertEquals("A1", vendingMachine.returnEverything() );
+    }
+
+
+
+    @Test
+    public void canBuyProduct() {
+        vendingMachine.addCoinToAcceptedList(FIVE, TEN, TWENTY, FIFTY, ONEPOUND);
+        vendingMachine.addMoney(TWENTY);
+        vendingMachine.addMoney(FIFTY);
+        vendingMachine.assignSlotsToVendingMachine();
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+        vendingMachine.assignProductToEmptySlot(drink, 1.00);
+//        vendingMachine.sellProduct(SlotCode.A1);
+        assertEquals(0.07, vendingMachine.getCoinsReceivedTotal(), 0.1);
+    }
+
+    // return the full slot list, find out how to return object contents too
+
+
+
+
+
+
+
+
+    //    @Test
+//    public void canSelectItemByCode(){
 //        vendingMachine.assignSlotsToVendingMachine();
-//        vendingMachine.addCoinToAcceptedList(FIVE, TEN, TWENTY, FIFTY, ONEPOUND);
-//        vendingMachine.addMoney(FIFTY);
-//        vendingMachine.addMoney(TWENTY);
-//        vendingMachine.selectItemCode(SlotCode.B1);
-//        vendingMachine.checkEnoughFunds();
-//        vendingMachine.dispenseProduct();
+//        vendingMachine.returnEmptySlotIndex();
+//        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+//        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+//        vendingMachine.assignProductToEmptySlot(drink, 1.00);
 //    }
+
+
+
 }

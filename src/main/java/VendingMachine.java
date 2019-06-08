@@ -1,25 +1,31 @@
 import Money.Coin.Coin;
-import Money.Coin.CoinType;
-import Products.EmptySlot;
+import Products.Crisp;
+import Products.EmptyProductObj;
 import Products.Product;
 import VendingShelves.Slot;
 import VendingShelves.SlotCode;
 
-import javax.smartcardio.Card;
 import java.util.ArrayList;
 
 public class VendingMachine {
 
     private ArrayList<Coin> coinsReceived;
     private ArrayList<Coin> coinsThatCanBeAccepted;
+    private ArrayList<Coin> rejectedCoins;
+
     private ArrayList<Slot> slotsInMachine;
+    private ArrayList<SlotCode> slotsWithCrisps;
+    private Slot slot;
 
 
 
     public VendingMachine(ArrayList<Coin> coinsThatCanBeAccepted){
         this.coinsThatCanBeAccepted = new ArrayList<Coin>();
         this.coinsReceived = new ArrayList<Coin>();
+        this.rejectedCoins = new ArrayList<Coin>();
         this.slotsInMachine = new ArrayList<Slot>();
+        this.slotsWithCrisps = new ArrayList<SlotCode>();
+        this.slot = slot;
     }
 
     public void addCoinToAcceptedList(Coin coin1, Coin coin2, Coin coin3, Coin coin4, Coin coin5){
@@ -38,18 +44,24 @@ public class VendingMachine {
         return this.coinsReceived;
     }
 
-    public Boolean addMoney(Coin coin){
-        boolean accept = true;
+    public void addMoney(Coin coin){
        if (coinsThatCanBeAccepted.contains(coin)){
            this.coinsReceived.add(coin);
        } else {
-           accept = false;
+           this.rejectedCoins.add(coin);
        }
-       return accept;
+    }
+
+    public int returnRejectedCoinArraySize(){
+        return this.rejectedCoins.size();
+    }
+
+    public ArrayList<Coin> returnRejectedCoins(){
+        return this.rejectedCoins;
     }
 
     public void assignSlotsToVendingMachine(){
-        EmptySlot product = new EmptySlot("", "");
+        EmptyProductObj product = new EmptyProductObj("", "");
     SlotCode[] allSlots = SlotCode.values();
         for (SlotCode slot: allSlots){
         Slot newSlot = new Slot(slot, 0.0, product);
@@ -65,10 +77,85 @@ public class VendingMachine {
         return this.slotsInMachine;
     }
 
-//    public ArrayList<Slot> assignProductToSlot(Slot slot){
-//        int thisSlot = this.slotsInMachine.indexOf(slot.);
-//        this.slotsInMachine.set(thisSlot, slot);
-//        return this.slotsInMachine;
+//    public String makeSlotStringObject(){
+//        String all = "";
+//        for (Slot slot: slotsInMachine) {
+//            all = (this.slot.makeSlotCodeString() +
+//                    this.slot.makePriceString() +
+//                    this.slot.makeProductString() +
+//                    this.slot.getProduct().getBrand() +
+//                    this.slot.getProduct().getName());
+//        }
+//        return all;
 //    }
+
+
+
+
+    public ArrayList<String> returnEverything(){
+        ArrayList<String> contents = new ArrayList<String>();
+         for (Slot slot: slotsInMachine){
+            String stringObj = slot.returnStringObject();
+            contents.add(stringObj);
+         }
+         return contents;
+    }
+
+    public int returnEmptySlotIndex(){
+        int index = -1;
+        for (Slot slot: this.slotsInMachine){
+            if (slot.getPrice() == 0 ){
+                index = this.slotsInMachine.indexOf(slot);
+                break;
+            }
+        }
+        return index;
+    }
+
+    public void assignProductToEmptySlot(Product product, double price){
+        int emptySlot = returnEmptySlotIndex();
+        Slot fillSlot = slotsInMachine.get(emptySlot);
+        fillSlot.setPrice(price);
+        fillSlot.setProduct(product);
+    }
+
+    public ArrayList<SlotCode> returnAllCodesWithCrisps(){
+//        Crisp crisp;
+//        SlotCode[] slotsWithCrisps;
+        for (Slot slot: slotsInMachine){
+            Product eachSlot = slot.getProduct();
+            SlotCode slotCode = slot.selectItemCode(slot);
+            if (eachSlot instanceof Crisp){
+                slotsWithCrisps.add(slotCode);
+            }
+        }
+        return slotsWithCrisps;
+    }
+
+    public int returnNumberOfCodesWithCrisps(){
+        return returnAllCodesWithCrisps().size();
+    }
+
+    public double getCoinsReceivedTotal(){
+        double total = 0;
+        for ( Coin coin: this.coinsReceived){
+            total += coin.getCoinValueFromEnum();
+        }
+        return total;
+    }
+
+    public Product sellProduct(Slot choice){
+        for (int index = 0; index < slotsInMachine.size(); index++) {
+            // return the object at the slotcode index and replace it with empty object
+
+        }
+//            if ( choice.returnCode() == slot.returnCode()){
+//
+//            }
+//        }
+//        if ( getCoinsReceivedTotal() >= choice.getPrice()){
+//            this.slotsInMachine.get(choice.)
+
+        }
 
 }

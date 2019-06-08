@@ -18,4 +18,6 @@ public enum SlotCode {
     C4,
     C5;
 
+
+
 }

@@ -13,6 +13,7 @@ public class Coin {
     }
 
    public double getCoinValueFromEnum(){
-        return this.coinType.getCoinValue();
+         double amount = this.coinType.getCoinValue();
+       return amount;
    }
 }
