@@ -16,6 +16,8 @@ public class VendingMachine {
     private ArrayList<Slot> slotsInMachine;
     private ArrayList<SlotCode> slotsWithCrisps;
     private Slot slot;
+    private Product product;
+    private EmptyProductObj emptyProduct;
 
 
 
@@ -144,11 +146,34 @@ public class VendingMachine {
         return total;
     }
 
-    public Product sellProduct(Slot choice){
+    public double returnHowMuchStillOwed(Slot choice){
+        double amount = 0;
+        if (getCoinsReceivedTotal() < choice.getPrice()){
+            amount = (getCoinsReceivedTotal() - choice.getPrice()) * -1;
+        }
+        return amount;
+    }
+
+    public Product sellProduct(Slot choice) {
+        Slot slotToChange = slot;
+        Product productToSell = product;
+        EmptyProductObj newProduct = emptyProduct;
         for (int index = 0; index < slotsInMachine.size(); index++) {
+            slot = slotsInMachine.get(index);
+            if (choice.getProduct() == slot.getProduct()) {
+
+                    slotToChange = slotsInMachine.get(index);
+                    productToSell = slotToChange.getProduct();
+                    slotToChange.setPriceAndProduct(0.00, newProduct);
+                    this.coinsReceived.clear();
+            }
+        }
+        return productToSell;
+    }
+
             // return the object at the slotcode index and replace it with empty object
 
-        }
+
 //            if ( choice.returnCode() == slot.returnCode()){
 //
 //            }
@@ -156,6 +181,6 @@ public class VendingMachine {
 //        if ( getCoinsReceivedTotal() >= choice.getPrice()){
 //            this.slotsInMachine.get(choice.)
 
-        }
+
 
 }

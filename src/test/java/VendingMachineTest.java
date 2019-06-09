@@ -25,6 +25,8 @@ public class VendingMachineTest {
     private Slot B1Crisps;
     private Slot C1Sweet;
     private Slot empty;
+    private Slot slotToSell;
+    private Slot emptySlot;
     private ArrayList<Coin> coinsThatCanBeAccepted;
     private Crisp crisps;
     private Sweet sweet;
@@ -54,6 +56,9 @@ public class VendingMachineTest {
         B1Crisps = new Slot(SlotCode.B1, 0.50, crisps);
         C1Sweet = new Slot(SlotCode.C1, 0.65, sweet);
         empty = new Slot(SlotCode.A2, 0.00, emptyProductObj);
+
+        slotToSell = new Slot(SlotCode.A1, 0.65, crisps);
+        emptySlot = new Slot(SlotCode.A1, 0.00, emptyProductObj);
 
 
 
@@ -123,7 +128,13 @@ public class VendingMachineTest {
         assertEquals("A1", vendingMachine.returnEverything() );
     }
 
-
+    @Test
+    public void canGetTotalAmountCoinsReceived() {
+        vendingMachine.addCoinToAcceptedList(FIVE, TEN, TWENTY, FIFTY, ONEPOUND);
+        vendingMachine.addMoney(TWENTY);
+        vendingMachine.addMoney(FIFTY);
+        assertEquals(0.70, vendingMachine.getCoinsReceivedTotal(), 0.1);
+    }
 
     @Test
     public void canBuyProduct() {
@@ -135,8 +146,24 @@ public class VendingMachineTest {
         vendingMachine.assignProductToEmptySlot(crisps, 0.65);
         vendingMachine.assignProductToEmptySlot(drink, 1.00);
 //        vendingMachine.sellProduct(SlotCode.A1);
-        assertEquals(0.07, vendingMachine.getCoinsReceivedTotal(), 0.1);
+        assertEquals(crisps, vendingMachine.sellProduct(slotToSell));
+        assertEquals(0, vendingMachine.returnEmptySlotIndex());
+        assertEquals(0, vendingMachine.getCoinsReceivedTotal(), 0.1);
     }
+
+    //////didn't have time to figure out how to return product OR double, can we go thorugh this please?
+    ///i assume this will be casting but not sure how it works??////////
+
+//    @Test
+//    public void canReturnAmountStillOwed(){
+//        vendingMachine.addCoinToAcceptedList(FIVE, TEN, TWENTY, FIFTY, ONEPOUND);
+//        vendingMachine.addMoney(TWENTY);
+//        vendingMachine.assignSlotsToVendingMachine();
+//        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+//        vendingMachine.assignProductToEmptySlot(crisps, 0.65);
+//        vendingMachine.assignProductToEmptySlot(drink, 1.00);
+//        assertEquals(0, vendingMachine.sellProduct(slotToSell));
+//    }
 
     // return the full slot list, find out how to return object contents too
 

@@ -44,6 +44,11 @@ public class Slot {
         return price;
     }
 
+    public void setPriceAndProduct(double price, Product product){
+        this.price = price;
+        this.product = product;
+    }
+
     public Product getProduct() {
         return product;
     }
